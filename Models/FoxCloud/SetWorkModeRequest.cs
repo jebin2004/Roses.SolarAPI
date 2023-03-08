@@ -35,14 +35,14 @@ namespace Roses.SolarAPI.Models.FoxCloud
 
             switch (spaKey)
             {
+                case SpaKeys.H112:
+                    Values = new Values112() { Mode = workMode };
+                    break;
                 case SpaKeys.H108:
                     Values = new Values108() { Mode = workMode };
                     break;
                 case SpaKeys.H111:
                     Values = new Values111() { Mode = workMode };
-                    break;
-                case SpaKeys.H112:
-                    Values = new Values112() { Mode = workMode };
                     break;
                 default:
                     Values = new Values106() { Mode = workMode };
@@ -100,6 +100,7 @@ namespace Roses.SolarAPI.Models.FoxCloud
         [JsonPropertyName("h112__02__00")]
         public string? Mode { get; set; }
     }
+
     public class WorkModes
     {
         public const string FEED_IN = "Feedin";

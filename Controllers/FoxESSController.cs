@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Roses.SolarAPI.Configuration;
 using Roses.SolarAPI.Models;
 using Roses.SolarAPI.Models.FoxCloud;
+using Roses.SolarAPI.Models.Local;
 using Roses.SolarAPI.Services;
 using System.ComponentModel.DataAnnotations;
 
@@ -65,15 +66,60 @@ namespace Roses.SolarAPI.Controllers
             };
         }
 
-        //[HttpPost]
-        //[Route("Local/DisableForceChargeTimePeriod1")]
-        //public async Task<ApiResult> DisableForceChargeTimePeriod1(CancellationToken ct)
-        //{
-        //    return new ApiResult()
-        //    {
-        //        ResultCode = await _foxESSService.DisableForceChargeTimePeriod1(ct)
-        //    };
-        //}
+        [HttpGet]
+        [Route("Local/GetAddressValue")]
+        public async Task<ApiResult> GetAddressValue(CancellationToken ct, [FromQuery][Required] int address = 0)
+        {
+            return new ApiResult() { ResultCode = await _foxESSService.GetAddressValue(address) };
+        }
+
+        [HttpGet]
+        [Route("Local/WorkMode")]
+        public async Task<ApiResult> GetWorkMode(CancellationToken ct)
+        {
+            return new ApiResult() { ResultCode = await _foxESSService.GetWorkMode() };
+        }
+
+        [HttpPost]
+        [Route("Local/SetWorkModeSelfUse")]
+        public async Task<ApiResult> SetWorkModeSelfUse(CancellationToken ct = default)
+        {
+            return new ApiResult() { ResultCode = await _foxESSService.SetWorkMode(LocalWorkModes.SELF_USE, ct) };
+        }
+
+        [HttpPost]
+        [Route("Local/SetWorkModeFeedIn")]
+        public async Task<ApiResult> SetWorkModeFeedin(CancellationToken ct = default)
+        {
+            return new ApiResult() { ResultCode = await _foxESSService.SetWorkMode(LocalWorkModes.FEED_IN, ct) };
+        }
+
+        [HttpPost]
+        [Route("Local/SetWorkModeBackUp")]
+        public async Task<ApiResult> SetWorkModeBackUp(CancellationToken ct = default)
+        {
+            return new ApiResult() { ResultCode = await _foxESSService.SetWorkMode(LocalWorkModes.BACKUP, ct) };
+        }
+
+        [HttpPost]
+        [Route("Local/ForceChargeForTodayTimePeriod1")]
+        public async Task<ApiResult> ForceChargeForTodayTimePeriod1(CancellationToken ct)
+        {
+            return new ApiResult()
+            {
+                ResultCode = await _foxESSService.ForceChargeForTodayTimePeriod1(ct)
+            };
+        }
+
+        [HttpPost]
+        [Route("Local/DisableForceChargeTimePeriod1")]
+        public async Task<ApiResult> DisableForceChargeTimePeriod1(CancellationToken ct)
+        {
+            return new ApiResult()
+            {
+                ResultCode = await _foxESSService.DisableForceChargeTimePeriod1(ct)
+            };
+        }
 
         [HttpPost]
         [Route("Cloud/ForceChargeForTodayTimePeriod1")]

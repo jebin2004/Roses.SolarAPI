@@ -100,6 +100,62 @@ namespace Roses.SolarAPI.Services
 
             return response;
         }
+        public Task<string> GetWorkMode(CancellationToken ct = default)
+        {
+
+            AssertConfigured();
+
+            ModbusTcpClient? client = null;
+            try
+            {
+                client = new ModbusTcpClient();
+
+                client.Connect(new IPEndPoint(IPAddress.Parse(_config!.IPAddress!), _config.Port), ModbusEndianness.BigEndian);
+
+                // Read min SOC (on grid)
+                short originalValue = client.ReadInputRegisters<short>(_config.DeviceId, (int)FoxESSRegisters.INVERTER_WORKMODE, 1).ToArray().FirstOrDefault();
+
+                _logger.LogInformation("Successfully read value workmode.");
+
+                return Task.FromResult(originalValue.ToString());
+            }
+            finally
+            {
+                client?.Disconnect();
+            }
+        }
+
+        public Task<string> GetAddressValue(int address = 0, CancellationToken ct = default)
+        {
+
+            AssertConfigured();
+
+            ModbusTcpClient? client = null;
+            try
+            {
+                client = new ModbusTcpClient();
+
+                client.Connect(new IPEndPoint(IPAddress.Parse(_config!.IPAddress!), _config.Port), ModbusEndianness.BigEndian);
+
+                // Read min SOC (on grid)
+                short originalValue = client.ReadInputRegisters<short>(_config.DeviceId, address, 1).ToArray().FirstOrDefault();
+
+                _logger.LogInformation("Successfully read value workmode.");
+
+                return Task.FromResult(originalValue.ToString());
+            }
+            finally
+            {
+                client?.Disconnect();
+            }
+        }
+
+        public async Task<string> SetWorkMode(short workMode, CancellationToken ct = default)
+        {        
+            await WriteSingleRegister((FoxESSRegisters.INVERTER_WORKMODE, workMode), ct);
+
+            return FoxErrorNumber.OK.ToString();
+        }
 
         public async Task<string> SetBatteryMinGridSoCToCurrentSoc(CancellationToken ct = default)
         {
@@ -145,6 +201,7 @@ namespace Roses.SolarAPI.Services
             TimeOnly end = new TimeOnly(23, 59);
 
             await WriteSingleRegisters(ct,
+                (FoxESSRegisters.BATTERY_TIMEPERIOD1_CHARGE_FROM_GRID, (short)1),
                 (FoxESSRegisters.BATTERY_TIMEPERIOD1_START_TIME, now.ToFoxESSRegister()),
                 (FoxESSRegisters.BATTERY_TIMEPERIOD1_END_TIME, end.ToFoxESSRegister()));
 
